@@ -1,44 +1,106 @@
-body{
-    margin:0;
-    padding:0;
-    text-align:left;
-    font-size: 32px;
+body {
+    margin: 0 auto;
+    padding: 0;
+    text-align: left;
+    font-size: 24px;
+    width: 960px;
+    background: url(/backgroundimg.png);
+    background-size: cover;
 }
-header{
+
+header {
     background-color: #fff;
     border-bottom: 1px solid #ccc;
     text-align: center;
 }
-main{
-    border-bottom:1px solid #ccc;
+
+h1 {
+    margin-top: 70px;
+    text-align: center;
 }
-footer{
+
+main {
+    border-bottom: 1px solid #ccc;
+}
+
+footer {
     background-color: #fff;
-    border-bottom:1px solid #ccc;
+    border-bottom: 1px solid #ccc;
     text-align: center;
 }
-p{
-    font-size:200%;
+
+p {
     text-align: center;
-    border-bottom:1px solid #fff;
-    height:200px;
+    border-bottom: 1px solid #fff;
+    height: 30px;
+    margin-top: 130px;
 }
-ul{
+
+ul {
     padding: 0;
     border-top: 1px solid #000000;
-    display:table;  /* 定義 */
+    display: table;
+    /* 定義 */
     table-layout: fixed;
-    width:100%;
+    width: 100%;
 }
-li{
+
+li {
     text-align: center;
-    list-style-type:none;
+    list-style-type: none;
     border: 1px solid #666;
     background-color: #FFF;
-    display:table-cell;  /* 定義 */
+    display: table-cell;
+    /* 定義 */
     cursor: pointer;
 }
-li:hover{
+
+li:hover {
     background: #0066CC;
-    color:#fff;
+    color: #fff;
+}
+
+#output-wrapper {
+    display: flex;
+}
+
+#second_output {
+    width: 25%;
+}
+
+
+#output {
+    width: 25%;
+}
+
+#hukidasi img {
+    width: 260px;
+    position: absolute;
+    left: 300px;
+    top: 260px;
+}
+
+
+
+#hukidasi2 img {
+    width: 260px;
+    position: absolute;
+    left: 600px;
+    top: 260px;
+}
+
+#player1 {
+    width: 25%;
+}
+
+#player1 img {
+    width: 230px;
+}
+
+#player2 {
+    width: 25%;
+}
+
+#player2 img {
+    width: 230px;
 }
