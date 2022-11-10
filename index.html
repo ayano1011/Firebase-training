@@ -1,63 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>画像合成</title>
-    <link rel="stylesheet" href="main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>chatApp</title>
+  <style>
+    #output li {
+      background: #ccc;
+    }
+  </style>
 </head>
-<header></header>
-<main>
-    <h2>画像をアップロードして合成しよう(*ﾟ∀ﾟ*) </h2>
-    <form>
-        <input type="file" name="image_file_up" accept=".jpeg,.png,.jpg">
-        <button type="submit">OK</button>
-
-    </form>
-
-</main>
 
 <body>
-    <!-- 以下スクリプト -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src='https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js'></script>
-    <script src='https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js'></script>
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
+  <h1>realtime chat</h1>
+  <!-- 入力場所を作成しよう -->
+  <form>
+    <fieldset>
+      <legend>チャット入力画面</legend>
+      <div>
+        フレーズ１: <input type="text" id="name">
+      </div>
+      <div>
+        フレーズ２: <input type="text" id="text">
+      </div>
+      <div>
+        <button type="button" id="send">セイッ</button>
+      </div>
+    </fieldset>
+  </form>
+  ;
+  <!-- データ出力場所 -->
+  <div id="output" style="overflow:auto; height: 300px;"></div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAQaQO9rJmvg4zcryHftugUDaaBkzDQB7g",
-            authDomain: "hana-app-511e7.firebaseapp.com",
-            projectId: "hana-app-511e7",
-            storageBucket: "hana-app-511e7.appspot.com",
-            messagingSenderId: "464200535528",
-            appId: "1:464200535528:web:e161becf16365f654d285d"
-        };
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script>
+    // 日時をいい感じの形式にする関数
+    function convertTimestampToDatetime(timestamp) {
+      const _d = timestamp ? new Date(timestamp * 1000) : new Date();
+      const Y = _d.getFullYear();
+      const m = (_d.getMonth() + 1).toString().padStart(2, '0');
+      const d = _d.getDate().toString().padStart(2, '0');
+      const H = _d.getHours().toString().padStart(2, '0');
+      const i = _d.getMinutes().toString().padStart(2, '0');
+      const s = _d.getSeconds().toString().padStart(2, '0');
+      return `${Y}/${m}/${d} ${H}:${i}:${s}`;
+    }
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
 
-        //formのsubmitにイベント設定
-        var form = document.querySelector('form');
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            var imgs = form.querySelector('input');
-            var uploads = [];
-            for (var file of imgs.files) {
-                //選択したファイルのファイル名を使うが、場合によってはかぶるので注意
-                var storageRef = firebase.storage().ref('form-uploaded/' + file.name);
-                uploads.push(storageRef.put(file));
-            }
-            //すべての画像のアップロード完了を待つ
-            Promise.all(uploads).then(function () {
-                console.log('アップロード完了');
-            });
-        });
+  </script>
+  <!-- 以下にfirebaseのコードを貼り付けよう -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
 
-    </script>
+    // 以下を追加
+    import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+      from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAQaQO9rJmvg4zcryHftugUDaaBkzDQB7g",
+      authDomain: "hana-app-511e7.firebaseapp.com",
+      projectId: "hana-app-511e7",
+      storageBucket: "hana-app-511e7.appspot.com",
+      messagingSenderId: "464200535528",
+      appId: "1:464200535528:web:e161becf16365f654d285d"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    // Realtime Databaseを使う
+    // Realtime Databaseに接続して、Realtime Database内のチャットを使用
+    const db = getDatabase(app);
+    // 階層に
+    const dbRef = ref(db, "lyric");
+
+    $("#send").on("click", function () {
+      const msg = {
+        name: $("#name").val(),
+        text: $("#text").val()
+      }
+      // ユニークキーを生成して、msgの内容をストレージに送る
+      const NewPostRef = push(dbRef);
+      set(NewPostRef, msg)
+    });
+
+    onChildAdded(dbRef, function (data) {
+      const msg = data.val();  // Firebaseの関数
+      const key = data.key;    // ユニークキー
+      let h = "<p>";
+      h += msg.name;
+      h += msg.text;
+      h += "</p>";
+      $("#output").append(h);
+
+    });
+
+  </script>
+
+
+  </script>
+
 </body>
 
 </html>
