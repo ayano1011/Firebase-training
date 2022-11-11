@@ -31,25 +31,29 @@
     </div>
   </div>
   <div id="hukidasi">
-    <img src="/image/hukidasi.jpg">
+    <img src="/image/hukidasi.png">
   </div>
   <div id="hukidasi2">
-    <img src="/image/hukidasior.jpg">
+    <img src="/image/hukidasior.png">
 
   </div>
 
 
   <form>
     <fieldset>
-      <!-- <legend>チャット入力画面</legend> -->
-      <div>
-        フレーズ１: <input type="text" id="name">
-      </div>
-      <div>
-        フレーズ２: <input type="text" id="text">
-      </div>
-      <div>
-        <button type="button" id="send">セイッ</button>
+      <!-- <legend>入力画面</legend> -->
+      <div class="text-wrapper">
+        <div class="text-cnt">
+          <div>
+            リリック１: <input type="text" id="name">
+          </div>
+          <div>
+            リリック２: <input type="text" id="text">
+          </div>
+        </div>
+        <div>
+          <button type="button" id="send">セイッ</button>
+        </div>
       </div>
     </fieldset>
   </form>
@@ -77,24 +81,40 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     // Realtime Databaseを使う
-    // Realtime Databaseに接続して、Realtime Database内のチャットを使用
+    // Realtime Databaseに接続して、Realtime Database内のlyricを使用
     const db = getDatabase(app);
     // 階層に
-    const dbRef = ref(db, "lyric");
+    const dbRef = ref(db, "lyric/1p");
+    const db_Ref = ref(db, "lyric/2p");
+
 
     let clickcount = 0
     $("#send").on("click", function () {
       // クリック数をカウント
       clickcount += 1;
       console.log(clickcount)
+      // クリック数が偶数の時右に表示
+      if (clickcount % 2 === 0) {
 
-      const msg = {
-        name: $("#name").val(),
-        text: $("#text").val()
+        const msg = {
+          name: $("#name").val(),
+          text: $("#text").val()
+        }
+        // ユニークキーを生成して、msgの内容をストレージに送る
+        const NewPostRef = push(db_Ref);
+        set(NewPostRef, msg)
+
+        // クリック数が奇数の時左に表示
+      } else {
+        const msg = {
+          name: $("#name").val(),
+          text: $("#text").val()
+        }
+        // ユニークキーを生成して、msgの内容をストレージに送る
+        const NewPostRef = push(dbRef);
+        set(NewPostRef, msg)
+
       }
-      // ユニークキーを生成して、msgの内容をストレージに送る
-      const NewPostRef = push(dbRef);
-      set(NewPostRef, msg)
     });
 
     // function count() {
@@ -103,34 +123,33 @@
     // thisCount = thisCount += 1;
     // $("#count").html(thisCount);
 
-    // クリック数が偶数の時左に表示
-    if (clickcount % 2 === 0) {
-      onChildAdded(dbRef, function (data) {
-        const msg = data.val();  // Firebaseの関数
-        const key = data.key;    // ユニークキー
-        let h = "<p>";
-        h += msg.name;
-        h += "<br>";
+    onChildAdded(dbRef, function (data) {
+      const msg = data.val();  // Firebaseの関数
+      console.log(msg)
+      // const key = data.key;    // ユニークキー
+      let h = "<p>";
+      h += msg.name;
+      h += "<br>";
 
-        h += msg.text;
-        h += "</p>";
-        $("#output").prepend(h);
+      h += msg.text;
+      h += "</p>";
+      $("#output").prepend(h);
 
-      });
-    } else {
-      onChildAdded(dbRef, function (data) {
-        const msg = data.val();  // Firebaseの関数
-        const key = data.key;    // ユニークキー
-        let h = "<p>";
-        h += msg.name;
-        h += "<br>";
-        h += msg.text;
-        h += "</p>";
-        $("#second_output").prepend(h);
+    });
 
-      });
+    onChildAdded(db_Ref, function (data) {
+      const msg = data.val();  // Firebaseの関数
+      const key = data.key;    // ユニークキー
+      let h = "<p>";
+      h += msg.name;
+      h += "<br>";
+      h += msg.text;
+      h += "</p>";
+      $("#second_output").prepend(h);
 
-    }
+    });
+
+
     // }
 
   </script>
